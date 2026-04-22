@@ -2,7 +2,7 @@
 
 import sys
 
-from mcpfinder.server import main
+from mcp_server_find.server import main
 
 if __name__ == "__main__":
     try:

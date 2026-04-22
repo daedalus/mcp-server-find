@@ -1,7 +1,7 @@
-# SPEC.md — mcpfinder
+# SPEC.md — mcp-server-find
 
 ## Purpose
-Python implementation of MCPfinder, an MCP server that helps AI agents discover, evaluate, and install other MCP servers. Aggregates data from Official MCP Registry, Glama, and Smithery into a fast, searchable index with FTS5 full-text search.
+Python implementation of mcp-server-find, an MCP server that helps AI agents discover, evaluate, and install other MCP servers. Aggregates data from Official MCP Registry, Glama, and Smithery into a fast, searchable index with FTS5 full-text search.
 
 ## Scope
 

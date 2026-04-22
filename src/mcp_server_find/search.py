@@ -6,8 +6,8 @@ import sqlite3
 from datetime import UTC
 from typing import Any
 
-from mcpfinder.categories import categorize_server
-from mcpfinder.types import (
+from mcp_server_find.categories import categorize_server
+from mcp_server_find.types import (
     ConfidenceBreakdown,
     RegistryEnvVar,
     SearchResult,

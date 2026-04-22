@@ -29,13 +29,13 @@ __all__ = [
     "enrich_deprecation_flags",
 ]
 
-from mcpfinder.categories import (
+from mcp_server_find.categories import (
     categorize_server,
     extract_keywords,
     get_servers_by_category,
     list_categories,
 )
-from mcpfinder.db import (
+from mcp_server_find.db import (
     get_data_dir,
     get_last_sync_timestamp,
     get_server_count,
@@ -43,19 +43,19 @@ from mcpfinder.db import (
     is_sync_needed,
     update_sync_log,
 )
-from mcpfinder.enrich import enrich_deprecation_flags, enrich_smithery_repo_urls
-from mcpfinder.install import get_install_config
-from mcpfinder.search import (
+from mcp_server_find.enrich import enrich_deprecation_flags, enrich_smithery_repo_urls
+from mcp_server_find.install import get_install_config
+from mcp_server_find.search import (
     find_server_by_name_or_slug,
     get_server_details,
     search_servers,
 )
-from mcpfinder.snapshot import (
+from mcp_server_find.snapshot import (
     DEFAULT_SNAPSHOT_BASE,
     bootstrap_from_snapshot,
     fetch_snapshot_manifest,
 )
-from mcpfinder.sync import (
+from mcp_server_find.sync import (
     find_existing_server,
     find_official_from_smithery_qualified_name,
     merge_server_data,

@@ -4,8 +4,8 @@ import sqlite3
 
 import pytest
 
-from mcpfinder.db import init_database
-from mcpfinder.install import get_install_config
+from mcp_server_find.db import init_database
+from mcp_server_find.install import get_install_config
 
 
 @pytest.fixture

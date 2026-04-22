@@ -11,7 +11,7 @@ try:
 except ImportError:
     FASTMCP_AVAILABLE = False
 
-from mcpfinder import (
+from mcp_server_find import (
     get_servers_by_category,
     is_sync_needed,
     list_categories,
@@ -60,7 +60,7 @@ def _build_env_map(env_vars: list[dict]) -> dict[str, str]:
 
 async def _ensure_sync(conn: sqlite3.Connection) -> None:
     """Ensure data is synced."""
-    from mcpfinder.db import get_server_count
+    from mcp_server_find.db import get_server_count
 
     count = get_server_count(conn)
     if count == 0 or is_sync_needed(conn):
@@ -115,7 +115,7 @@ def create_mcp_server() -> "fastmcp.FastMCP":
         Returns:
             Formatted search results with metadata
         """
-        from mcpfinder.db import init_database
+        from mcp_server_find.db import init_database
 
         conn = init_database()
         await _ensure_sync(conn)
@@ -180,7 +180,7 @@ def create_mcp_server() -> "fastmcp.FastMCP":
             Detailed server information including trust signals, warnings,
             environment variables, and tools
         """
-        from mcpfinder.db import init_database
+        from mcp_server_find.db import init_database
 
         conn = init_database()
         await _ensure_sync(conn)
@@ -240,7 +240,7 @@ def create_mcp_server() -> "fastmcp.FastMCP":
         Returns:
             JSON config snippet with file paths and required env vars
         """
-        from mcpfinder.db import init_database
+        from mcp_server_find.db import init_database
 
         conn = init_database()
         await _ensure_sync(conn)
@@ -257,7 +257,7 @@ def create_mcp_server() -> "fastmcp.FastMCP":
                 indent=2,
             )
 
-        from mcpfinder.install import PLATFORM_INFO
+        from mcp_server_find.install import PLATFORM_INFO
 
         platform_info = PLATFORM_INFO.get(platform, PLATFORM_INFO["claude-desktop"])
 
@@ -344,7 +344,7 @@ def create_mcp_server() -> "fastmcp.FastMCP":
         Returns:
             Category list or servers in a category
         """
-        from mcpfinder.db import init_database
+        from mcp_server_find.db import init_database
 
         conn = init_database()
         await _ensure_sync(conn)

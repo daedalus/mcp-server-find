@@ -9,8 +9,8 @@ from urllib.parse import urlparse
 
 import httpx
 
-from mcpfinder.categories import extract_keywords
-from mcpfinder.db import get_last_sync_timestamp, update_sync_log
+from mcp_server_find.categories import extract_keywords
+from mcp_server_find.db import get_last_sync_timestamp, update_sync_log
 
 REGISTRY_BASE = "https://registry.modelcontextprotocol.io"
 GLAMA_BASE = "https://glama.ai/api/mcp/v1"

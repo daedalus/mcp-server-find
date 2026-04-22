@@ -13,9 +13,9 @@ from typing import Any
 
 import httpx
 
-from mcpfinder.db import get_data_dir
+from mcp_server_find.db import get_data_dir
 
-DEFAULT_SNAPSHOT_BASE = "https://mcpfinder.dev/api/v1/snapshot"
+DEFAULT_SNAPSHOT_BASE = "https://mcp-server-find.dev/api/v1/snapshot"
 
 
 class SnapshotManifest:

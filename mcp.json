@@ -1,7 +1,7 @@
 {
   "mcpServers": {
-    "mcpfinder": {
-      "command": "mcpfinder",
+    "mcp-server-find": {
+      "command": "mcp-server-find",
       "env": {}
     }
   }

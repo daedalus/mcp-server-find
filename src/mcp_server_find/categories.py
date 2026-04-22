@@ -4,7 +4,7 @@ import re
 import sqlite3
 from typing import Any
 
-from mcpfinder.types import Category
+from mcp_server_find.types import Category
 
 STOP_WORDS = {
     "a",

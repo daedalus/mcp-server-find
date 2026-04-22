@@ -4,8 +4,8 @@ import json
 import sqlite3
 from typing import Any
 
-from mcpfinder.search import find_server_by_name_or_slug
-from mcpfinder.types import InstallConfig, RegistryEnvVar
+from mcp_server_find.search import find_server_by_name_or_slug
+from mcp_server_find.types import InstallConfig, RegistryEnvVar
 
 PLATFORM_INFO = {
     "claude-desktop": {

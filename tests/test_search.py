@@ -2,14 +2,14 @@
 
 import pytest
 
-from mcpfinder.categories import (
+from mcp_server_find.categories import (
     categorize_server,
     extract_keywords,
     get_servers_by_category,
     list_categories,
 )
-from mcpfinder.db import init_database
-from mcpfinder.search import (
+from mcp_server_find.db import init_database
+from mcp_server_find.search import (
     find_server_by_name_or_slug,
     get_server_details,
     search_servers,

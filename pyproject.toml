@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "mcpfinder"
+name = "mcp-server-find"
 version = "0.1.0"
 description = "MCP server discovery - find and install MCP servers from Official Registry, Glama, and Smithery"
 readme = "README.md"
@@ -31,10 +31,10 @@ lint = [
     "ruff",
     "mypy",
 ]
-all = ["mcpfinder[dev,test,lint,mcp]"]
+all = ["mcp-server-find[dev,test,lint,mcp]"]
 
 [project.scripts]
-mcpfinder = "mcpfinder.__main__:main"
+mcp-server-find = "mcp_server_find.__main__:main"
 
 [project.urls]
 Homepage = "https://github.com/daedalus/mcp-server-find"
@@ -42,7 +42,7 @@ Repository = "https://github.com/daedalus/mcp-server-find"
 Issues = "https://github.com/daedalus/mcp-server-find/issues"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/mcpfinder"]
+packages = ["src/mcp_server_find"]
 
 [tool.hatch.build.targets.sdist]
 include = ["src/mcpfinder"]
