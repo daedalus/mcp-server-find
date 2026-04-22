@@ -19,6 +19,9 @@ __all__ = [
     "sync_official_registry",
     "sync_glama_registry",
     "sync_smithery_registry",
+    "find_existing_server",
+    "find_official_from_smithery_qualified_name",
+    "merge_server_data",
     "DEFAULT_SNAPSHOT_BASE",
     "bootstrap_from_snapshot",
     "fetch_snapshot_manifest",
@@ -53,6 +56,9 @@ from mcpfinder.snapshot import (
     fetch_snapshot_manifest,
 )
 from mcpfinder.sync import (
+    find_existing_server,
+    find_official_from_smithery_qualified_name,
+    merge_server_data,
     sync_glama_registry,
     sync_official_registry,
     sync_smithery_registry,

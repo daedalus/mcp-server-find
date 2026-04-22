@@ -18,6 +18,132 @@ SMITHERY_BASE = "https://registry.smithery.ai"
 PAGE_LIMIT = 100
 
 
+def _canonical_name_token(s: str) -> str:
+    """Strip common MCP-ish prefixes/suffixes for monorepo matching."""
+    if not s:
+        return ""
+    t = s.lower()
+    for _ in range(3):
+        t = re.sub(r"^(mcp|server)+", "", t)
+        t = re.sub(r"(mcp|server)+$", "", t)
+    return re.sub(r"[^a-z0-9]+", "", t)
+
+
+def _normalize_repo_url(url: str | None) -> str | None:
+    """Normalize a repository URL."""
+    if not url:
+        return None
+    url = url.strip().lower()
+    if not url:
+        return None
+    scp_match = re.match(r"^git@([^:]+):(.+)$", url)
+    if scp_match:
+        url = f"https://{scp_match.group(1)}/{scp_match.group(2)}"
+    url = re.sub(r"\.git$", "", url)
+    url = url.rstrip("/")
+    return url if url else None
+
+
+def _extract_repo_key(url: str | None) -> str | None:
+    """Extract canonical owner/repo from code-host URL."""
+    n = _normalize_repo_url(url)
+    if not n:
+        return None
+    m = re.search(
+        r"\b(?:github|gitlab|bitbucket|codeberg)\.(?:com|org|io)\/([^/]+)\/([^/?#]+)", n
+    )
+    return f"{m.group(1)}/{m.group(2)}" if m else None
+
+
+def find_existing_server(
+    conn: sqlite3.Connection,
+    repo_url: str | None,
+    package_identifier: str | None,
+    registry_type: str | None,
+    slug: str,
+    name: str | None = None,
+) -> str | None:
+    """Find an existing server that should be considered the same project."""
+    del registry_type  # Reserved for future use
+    repo_key = _extract_repo_key(repo_url)
+
+    if repo_key:
+        tail = f"/{repo_key}"
+        cursor = conn.execute(
+            """SELECT id, slug, name, package_identifier FROM servers
+               WHERE LOWER(repository_url) LIKE ? OR LOWER(repository_url) LIKE ?""",
+            (f"%{tail}", f"%{tail}.git"),
+        )
+        candidates = cursor.fetchall()
+
+        if len(candidates) == 1:
+            return candidates[0]["id"]
+
+        if len(candidates) > 1:
+            if package_identifier:
+                for c in candidates:
+                    if (
+                        c["package_identifier"]
+                        and c["package_identifier"].lower()
+                        == package_identifier.lower()
+                    ):
+                        return c["id"]
+            if slug:
+                for c in candidates:
+                    if c["slug"] == slug:
+                        return c["id"]
+            if name:
+                token = _canonical_name_token(name)
+                if token:
+                    for c in candidates:
+                        ct = _canonical_name_token(c["name"])
+                        if ct and (
+                            ct == token or ct.endswith(token) or token.endswith(ct)
+                        ):
+                            return c["id"]
+            return None
+
+    if package_identifier:
+        cursor = conn.execute(
+            """SELECT id FROM servers
+               WHERE LOWER(package_identifier) = LOWER(?)
+               LIMIT 1""",
+            (package_identifier,),
+        )
+        row = cursor.fetchone()
+        if row:
+            return row["id"]
+
+    if slug:
+        cursor = conn.execute(
+            "SELECT id FROM servers WHERE slug = ? AND source != 'unknown' LIMIT 2",
+            (slug,),
+        )
+        rows = cursor.fetchall()
+        if len(rows) == 1:
+            return rows[0]["id"]
+
+    return None
+
+
+def find_official_from_smithery_qualified_name(
+    conn: sqlite3.Connection, qualified_name: str | None
+) -> str | None:
+    """Find Official mirror of a Smithery server."""
+    if not qualified_name:
+        return None
+    tail = qualified_name.lower().replace("/", "-")
+    tail = re.sub(r"[^a-z0-9-]", "", tail)
+    if not tail:
+        return None
+    cursor = conn.execute(
+        'SELECT id FROM servers WHERE LOWER(name) = ? AND source = "official" LIMIT 1',
+        (f"ai.smithery/{tail}",),
+    )
+    row = cursor.fetchone()
+    return row["id"] if row else None
+
+
 async def sync_official_registry(conn: sqlite3.Connection) -> int:
     """Sync servers from the Official MCP Registry."""
     last_sync = get_last_sync_timestamp(conn, "official")
@@ -410,3 +536,107 @@ def _iso_now() -> str:
     from datetime import datetime
 
     return datetime.now(UTC).isoformat()
+
+
+def merge_server_data(
+    conn: sqlite3.Connection, existing_id: str, new_row: dict[str, Any]
+) -> None:
+    """Merge richer data from a new source into an existing server."""
+    cursor = conn.execute("SELECT * FROM servers WHERE id = ?", (existing_id,))
+    existing = cursor.fetchone()
+    if not existing:
+        return
+
+    updates = []
+    values = []
+
+    if new_row.get("description") and len(new_row["description"]) > len(
+        existing["description"] or ""
+    ):
+        updates.append("description = ?")
+        values.append(new_row["description"])
+
+    text_fields = [
+        "repository_url",
+        "remote_url",
+        "icon_url",
+        "transport_type",
+        "registry_type",
+        "package_identifier",
+    ]
+    for f in text_fields:
+        if new_row.get(f) and not existing.get(f):
+            updates.append(f"{f} = ?")
+            values.append(new_row[f])
+
+    if new_row.get("updated_at") and (
+        not existing["updated_at"] or new_row["updated_at"] > existing["updated_at"]
+    ):
+        updates.append("updated_at = ?")
+        values.append(new_row["updated_at"])
+    if new_row.get("published_at") and not existing["published_at"]:
+        updates.append("published_at = ?")
+        values.append(new_row["published_at"])
+
+    if new_row.get("env_vars"):
+        merged_env_vars = _merge_json_arrays(
+            existing["env_vars"], new_row["env_vars"], "name"
+        )
+        if merged_env_vars:
+            updates.append("env_vars = ?")
+            values.append(merged_env_vars)
+
+    if new_row.get("raw_data"):
+        merged_raw = _merge_raw_data(
+            existing["raw_data"],
+            new_row.get("raw_data"),
+            new_row.get("source", "unknown"),
+        )
+        if merged_raw:
+            updates.append("raw_data = ?")
+            values.append(merged_raw)
+
+    if updates:
+        values.append(existing_id)
+        conn.execute(f"UPDATE servers SET {', '.join(updates)} WHERE id = ?", values)
+        conn.commit()
+
+
+def _merge_json_arrays(
+    existing_json: str | None, incoming_json: str | None, key: str
+) -> str | None:
+    """Merge two JSON arrays by key."""
+    try:
+        existing = json.loads(existing_json or "[]") if existing_json else []
+        incoming = json.loads(incoming_json or "[]") if incoming_json else []
+        merged = {}
+        for item in existing + incoming:
+            if isinstance(item, dict) and key in item:
+                k = item[key]
+                merged[k] = {**merged.get(k, {}), **item}
+        return json.dumps(list(merged.values()))
+    except (json.JSONDecodeError, TypeError):
+        return None
+
+
+def _merge_raw_data(
+    existing_raw: str | None, incoming_raw: str | None, incoming_source: str
+) -> str | None:
+    """Merge raw data envelopes."""
+    try:
+        existing_parsed = json.loads(existing_raw) if existing_raw else None
+        incoming_parsed = json.loads(incoming_raw) if incoming_raw else None
+
+        if isinstance(existing_parsed, dict) and "bySource" in existing_parsed:
+            envelope = existing_parsed
+        else:
+            envelope = {"primary": existing_parsed, "bySource": {}}
+
+        if incoming_parsed:
+            envelope["bySource"][incoming_source] = incoming_parsed
+            if not envelope.get("primary"):
+                envelope["primary"] = incoming_parsed
+
+        return json.dumps(envelope)
+    except (json.JSONDecodeError, TypeError):
+        return None
