@@ -24,4 +24,4 @@ htmlcov/
 *.swp
 *.swo
 .hypothesis/
-.mcpfinder/
+.mcp-server-find/

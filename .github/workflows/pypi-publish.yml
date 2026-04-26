@@ -39,7 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: pypi
-      url: https://pypi.org/p/mcpfinder
+      url: https://pypi.org/p/mcp-server-find
     permissions:
       id-token: write
     steps:

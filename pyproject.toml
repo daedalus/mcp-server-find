@@ -45,7 +45,7 @@ Issues = "https://github.com/daedalus/mcp-server-find/issues"
 packages = ["src/mcp_server_find"]
 
 [tool.hatch.build.targets.sdist]
-include = ["src/mcpfinder"]
+include = ["src/mcp_server_find"]
 
 [tool.ruff]
 line-length = 88
