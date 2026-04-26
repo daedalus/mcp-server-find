@@ -84,7 +84,7 @@ def get_data_dir() -> str:
     if data_dir:
         return data_dir
     home = os.path.expanduser("~")
-    return os.path.join(home, ".mcpfinder")
+    return os.path.join(home, ".mcp-server-find")
 
 
 def init_database(db_path: str | None = None) -> sqlite3.Connection:

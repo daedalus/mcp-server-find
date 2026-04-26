@@ -1,21 +1,21 @@
-# mcpfinder
+# mcp-server-find
 
 MCP server discovery - find and install MCP servers from Official Registry, Glama, and Smithery.
 
-[![PyPI](https://img.shields.io/pypi/v/mcpfinder.svg)](https://pypi.org/project/mcpfinder/)
-[![Python](https://img.shields.io/pypi/pyversions/mcpfinder.svg)](https://pypi.org/project/mcpfinder/)
+[![PyPI](https://img.shields.io/pypi/v/mcp-server-find.svg)](https://pypi.org/project/mcp-server-find/)
+[![Python](https://img.shields.io/pypi/pyversions/mcp-server-find.svg)](https://pypi.org/project/mcp-server-find/)
 
 mcp-name: io.github.daedalus/mcp-server-find
 
 ## Install
 
 ```bash
-pip install mcpfinder
+pip install mcp-server-find
 ```
 
 ## MCP Server
 
-mcpfinder is an MCP server that helps AI agents discover, evaluate, and install other MCP servers. It aggregates data from:
+mcp-server-find is an MCP server that helps AI agents discover, evaluate, and install other MCP servers. It aggregates data from:
 
 - Official MCP Registry
 - Glama (glama.ai)
@@ -26,9 +26,9 @@ mcpfinder is an MCP server that helps AI agents discover, evaluate, and install 
 ```json
 {
   "mcpServers": {
-    "mcpfinder": {
+    "mcp-server-find": {
       "command": "python",
-      "args": ["-m", "mcpfinder"]
+      "args": ["-m", "mcp_server_find"]
     }
   }
 }
@@ -37,10 +37,10 @@ mcpfinder is an MCP server that helps AI agents discover, evaluate, and install 
 ### Usage
 
 ```python
-from mcpfinder import search_servers, get_server_details, get_install_config
+from mcp_server_find import search_servers, get_server_details, get_install_config
 
 # Initialize database
-from mcpfinder.db import init_database
+from mcp_server_find.db import init_database
 conn = init_database()
 
 # Search for MCP servers

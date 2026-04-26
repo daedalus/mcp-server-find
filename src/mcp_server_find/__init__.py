@@ -1,4 +1,4 @@
-"""mcpfinder - MCP server discovery for AI agents."""
+"""mcp-server-find - MCP server discovery for AI agents."""
 
 __version__ = "0.1.0"
 __all__ = [

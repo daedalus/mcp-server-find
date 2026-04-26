@@ -1,4 +1,4 @@
-"""CLI entry point for mcpfinder."""
+"""CLI entry point for mcp-server-find."""
 
 import sys
 

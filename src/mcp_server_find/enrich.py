@@ -110,10 +110,7 @@ async def enrich_smithery_repo_urls(
     headers = {
         "authorization": f"Bearer {token}",
         "accept": "application/vnd.github+json",
-        "user-agent": "mcpfinder-builder",
-    }
-
-    async def probe_one(item: dict[str, str]) -> None:
+        "user-agent": "mcp-server-find-builder",
         nonlocal result
 
         repo_url = f"https://github.com/{item['owner']}/{item['repo']}".lower()
@@ -290,10 +287,7 @@ async def _probe_github_archived(
     headers = {
         "authorization": f"Bearer {token}",
         "accept": "application/vnd.github+json",
-        "user-agent": "mcpfinder-builder",
-    }
-
-    async def probe(row: dict[str, str]) -> None:
+        "user-agent": "mcp-server-find-builder",
         nonlocal result
 
         match = re.match(r"https://github.com/([^/]+)/([^/#?]+)", row["repository_url"])

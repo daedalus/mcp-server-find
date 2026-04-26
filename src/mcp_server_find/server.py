@@ -74,7 +74,7 @@ async def _ensure_sync(conn: sqlite3.Connection) -> None:
         import sys
 
         sys.stderr.write(
-            f"[mcpfinder] Synced: Official={counts[0]}, Glama={counts[1]}, "
+            f"[mcp-server-find] Synced: Official={counts[0]}, Glama={counts[1]}, "
             f"Smithery={counts[2]} ({get_server_count(conn)} total)\n"
         )
 
@@ -84,7 +84,7 @@ def create_mcp_server() -> "fastmcp.FastMCP":
     if not FASTMCP_AVAILABLE:
         raise ImportError("fastmcp is required. Install with: pip install fastmcp")
 
-    mcp = fastmcp.FastMCP("mcpfinder")
+    mcp = fastmcp.FastMCP("mcp-server-find")
 
     @mcp.tool()
     async def search_mcp_servers(
